@@ -1,6 +1,6 @@
 
 import { AuthService } from "./AuthService";
-import { DomainService } from "./DomianService";
+import { DomainService } from "./DomainServices";
 
 
 //GET all message by user id
