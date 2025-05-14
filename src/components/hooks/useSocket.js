@@ -19,7 +19,7 @@ export const useSocket = () => {
     });
 
     socketInstance.on("connect_error", (err) => {
-      console.error("Socket.IO connection error:", err);
+      console.error("Socket.IO connection error: asd", err);
     });
 
     setSocket(socketInstance);

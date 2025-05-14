@@ -5,28 +5,25 @@ import { DataService } from "../../services/DataServices";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-//called from connection chat button
-
 function ConversationById() {
-  console.log("ConversationById component");
-
-  const socket = useSocket();
-  const { rid } = useParams();
+  const socket = useSocket(); //connect to backend server
+  const { friendId } = useParams();
   const [messageList, setMessageList] = useState([]);
   const loggedInUserId = useSelector((state) => state.user._id);
   const loggedInUser = useSelector((state) => state.user);
   const [message, setMessage] = useState("");
-  const [conversationID, setConversationID] = useState("");
 
+  console.log(friendId,"friendId");
+  console.log(loggedInUserId,"loggedInUserId");
+  
   const formatTime = (date) => new Date(date).toLocaleTimeString();
 
   const getConversationMessage = async () => {
     try {
-      const data = await DataService.getAllMessageByUserId(rid);
+      const data = await DataService.getAllMessageByUserId(friendId);
       if (data?.isSuccess) {
-        setMessageList(data?.apiData ? data?.apiData : []);
-        console.log(data?.apiData[0]?.conversationID);
-        setConversationID(data?.apiData[0]?.conversationID);
+        console.log(data?.data);
+        setMessageList(data?.data ? data?.data : []);
       }
     } catch (err) {
       console.log(err?.message);
@@ -38,10 +35,10 @@ function ConversationById() {
 
     try {
       const payload = {
-        receiverID: rid,
+        receiverID: friendId,
         content: message.trim(),
-        media: null, // Replace if needed
-        mediaType: null, // Replace if needed
+        media: null,
+        mediaType: null,
       };
 
       const response = await DataService.sendMessage(payload);
@@ -50,9 +47,6 @@ function ConversationById() {
 
         // Emit the message via Socket.IO
         socket.emit("sendMessage", savedMessage);
-
-        // Add to the local message list
-        //setMessageList((prevMessages) => [...prevMessages, savedMessage]);
 
         // Clear input
         setMessage("");
@@ -63,20 +57,20 @@ function ConversationById() {
   };
 
   useEffect(() => {
-    if (socket && conversationID) {
-      socket.emit("joinRoom", conversationID);
-      // console.log("Joined room:", conversationID);
+    if (socket) {
+      socket.emit("joinRoom", {
+        firstName: loggedInUser.firstName,
+        userId: loggedInUserId,
+        targetUserId: friendId,
+      });
     }
-  }, [socket, conversationID]);
+  }, [socket]);
 
   useEffect(() => {
     try {
       if (!socket) return;
 
       socket.on("receiveMessage", (newMessage) => {
-        // console.log("New message received:", newMessage);
-        console.log(messageList);
-
         setMessageList((prevMessages) => [...prevMessages, newMessage]);
       });
 
@@ -92,11 +86,14 @@ function ConversationById() {
     getConversationMessage();
   }, []);
 
+  console.log(messageList);
+  
+
   return (
     <>
       <Layout>
         <div className="flex justify-center mt-2 mb-2">
-          <div className="mockup-phone max-w-xl w-full min-w-52 min-h-28">
+          {/* <div className="mockup-phone max-w-xl w-full min-w-52 min-h-28">
             <div className="camera"></div>
             <div className="display p-4">
               {messageList?.length > 0 ? (
@@ -110,38 +107,24 @@ function ConversationById() {
                       <div className="chat-image avatar">
                         <div className="w-10 rounded-full">
                           <img
-                            alt={`${
-                              isSender
-                                ? loggedInUser?.firstName
-                                : user.firstName
-                            } profile image`}
-                            src={
-                              isSender ? loggedInUser?.photoUrl : user.photoUrl
-                            }
+                            alt={`${isSender ? loggedInUser?.firstName : user.firstName} profile image`}
+                            src={isSender ? loggedInUser?.photoUrl : user.photoUrl}
                           />
                         </div>
                       </div>
                       <div className="chat-header">
                         {isSender ? loggedInUser?.firstName : user.firstName}
-                        <time className="text-xs opacity-50">
-                          {formatTime(cur.createdAt)}
-                        </time>
+                        <time className="text-xs opacity-50">{formatTime(cur.createdAt)}</time>
                       </div>
-                      <div className="chat-bubble  break-words ">
-                        {cur.content}
-                      </div>
-                      <div className="chat-footer opacity-50">
-                        {isSender ? "Delivered" : "Seen"}
-                      </div>
+                      <div className="chat-bubble  break-words ">{cur.content}</div>
+                      <div className="chat-footer opacity-50">{isSender ? "Delivered" : "Seen"}</div>
                     </div>
                   );
                 })
               ) : (
                 <div className="flex flex-col items-center justify-center min-h-52 text-center">
                   <p className="text-gray-500">No chat found.</p>
-                  <p className="text-primary font-semibold">
-                    Say hi to start the conversation!
-                  </p>
+                  <p className="text-primary font-semibold">Say hi to start the conversation!</p>
                 </div>
               )}
 
@@ -155,16 +138,12 @@ function ConversationById() {
                     setMessage(e.target.value);
                   }}
                 />
-                <kbd
-                  type="button"
-                  onClick={handleSendMessage}
-                  className="kbd cursor-pointer"
-                >
+                <kbd type="button" onClick={handleSendMessage} className="kbd cursor-pointer">
                   Send
                 </kbd>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </Layout>
     </>

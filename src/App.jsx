@@ -17,7 +17,7 @@ function App() {
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<Signup />} />
             <Route path="/chat" element={<ChatPage />} />
-            <Route path="/conversation/:rid" element={<ConversationById />} />
+            <Route path="/conversation/:friendId" element={<ConversationById />} />
             <Route path="/test" element={<Test/>} />
             <Route path="*" element={<h1>no page found</h1>} />
           </Routes>
