@@ -57,14 +57,14 @@ function ConversationById() {
   };
 
   useEffect(() => {
-    if (socket) {
+    if (socket && loggedInUser ) {
       socket.emit("joinRoom", {
         firstName: loggedInUser.firstName,
         userId: loggedInUserId,
         targetUserId: friendId,
       });
     }
-  }, [socket]);
+  }, [socket,loggedInUser]);
 
   useEffect(() => {
     try {
