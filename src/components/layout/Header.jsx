@@ -45,11 +45,6 @@ function Hearder() {
     dispatch(themeSelector(!themeSelect));
   };
 
-
-  
- 
-
-
   const initSetTheme = () => {
     const theme = localStorage.getItem("theme");
     // if (theme && theme === "winter") {

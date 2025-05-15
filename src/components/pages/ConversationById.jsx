@@ -13,9 +13,6 @@ function ConversationById() {
   const loggedInUser = useSelector((state) => state.user);
   const [message, setMessage] = useState("");
 
-  console.log(friendId,"friendId");
-  console.log(loggedInUserId,"loggedInUserId");
-  
   const formatTime = (date) => new Date(date).toLocaleTimeString();
 
   const getConversationMessage = async () => {
@@ -57,14 +54,16 @@ function ConversationById() {
   };
 
   useEffect(() => {
-    if (socket && loggedInUser ) {
+    if (socket && loggedInUserId) {
+      console.log(loggedInUserId);
+
       socket.emit("joinRoom", {
         firstName: loggedInUser.firstName,
         userId: loggedInUserId,
         targetUserId: friendId,
       });
     }
-  }, [socket,loggedInUser]);
+  }, [socket, loggedInUser]);
 
   useEffect(() => {
     try {
@@ -86,37 +85,37 @@ function ConversationById() {
     getConversationMessage();
   }, []);
 
-  console.log(messageList);
-  
-
   return (
     <>
       <Layout>
         <div className="flex justify-center mt-2 mb-2">
-          {/* <div className="mockup-phone max-w-xl w-full min-w-52 min-h-28">
+          <div className="mockup-phone max-w-xl w-full min-w-52 min-h-28">
             <div className="camera"></div>
             <div className="display p-4">
               {messageList?.length > 0 ? (
                 messageList?.map((cur, i) => {
-                  const isSender = cur.senderID._id === loggedInUserId;
-                  const user = isSender ? cur.receiverID : cur.senderID;
+                  const isSender = cur.senderId._id === loggedInUserId;
+                  const user = isSender ? cur.receiverId : cur.senderId;
                   const alignment = isSender ? "chat-end" : "chat-start";
-
+                  {
+                    console.log(isSender, "isSender");
+                    console.log(user, "user");
+                  }
                   return (
                     <div key={cur._id} className={`chat ${alignment}`}>
                       <div className="chat-image avatar">
                         <div className="w-10 rounded-full">
                           <img
-                            alt={`${isSender ? loggedInUser?.firstName : user.firstName} profile image`}
-                            src={isSender ? loggedInUser?.photoUrl : user.photoUrl}
+                            alt={`${isSender ? loggedInUser?.name : user?.name} profile image`}
+                            src={isSender ? loggedInUser?.photoUrl : user?.photoUrl || ""}
                           />
                         </div>
                       </div>
                       <div className="chat-header">
-                        {isSender ? loggedInUser?.firstName : user.firstName}
-                        <time className="text-xs opacity-50">{formatTime(cur.createdAt)}</time>
+                        {isSender ? loggedInUser?.firstName : user?.name}
+                        <time className="text-xs opacity-50">{formatTime(cur?.createdAt)}</time>
                       </div>
-                      <div className="chat-bubble  break-words ">{cur.content}</div>
+                      <div className="chat-bubble  break-words ">{cur?.content}</div>
                       <div className="chat-footer opacity-50">{isSender ? "Delivered" : "Seen"}</div>
                     </div>
                   );
@@ -143,7 +142,7 @@ function ConversationById() {
                 </kbd>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </Layout>
     </>
