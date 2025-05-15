@@ -32,10 +32,9 @@ function ConversationById() {
 
     try {
       const payload = {
-        receiverID: friendId,
+        receiverId: friendId,
         content: message.trim(),
-        media: null,
-        mediaType: null,
+        mediaType: "text",
       };
 
       const response = await DataService.sendMessage(payload);
@@ -43,7 +42,7 @@ function ConversationById() {
         const savedMessage = response.data;
 
         // Emit the message via Socket.IO
-        socket.emit("sendMessage", savedMessage);
+        socket.emit("sendMessage",loggedInUserId,friendId ,savedMessage);
 
         // Clear input
         setMessage("");
@@ -97,10 +96,7 @@ function ConversationById() {
                   const isSender = cur.senderId._id === loggedInUserId;
                   const user = isSender ? cur.receiverId : cur.senderId;
                   const alignment = isSender ? "chat-end" : "chat-start";
-                  {
-                    console.log(isSender, "isSender");
-                    console.log(user, "user");
-                  }
+    
                   return (
                     <div key={cur._id} className={`chat ${alignment}`}>
                       <div className="chat-image avatar">

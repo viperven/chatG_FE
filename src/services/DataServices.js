@@ -22,7 +22,7 @@ const getAllMessageByUserId = async (friendId) => {
 
 const sendMessage = async (formData) => {
   try {
-    const res = await fetch(DomainService.GetBaseUrl() + "message/send", {
+    const res = await fetch(DomainService.GetBaseUrl() + "message/send-message", {
       method: "POST",
       headers: {
         Accept: "application/json",
